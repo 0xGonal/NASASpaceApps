@@ -127,6 +127,9 @@ async def train(req: Request):
     X = df.copy()
     X = X.drop(req.dropped_cols, axis=1)
     X = X.drop(req.target_col, axis=1)
+    print(X)
+    X = X.dropna(axis=1, how='all')
+    print(X)
     X = X.dropna()
     print(X)
     y = df[req.target_col]
@@ -184,8 +187,8 @@ async def train(req: Request):
     if os.path.exists(f"{req.model_name}.joblib"):
         return
 
-    joblib.dump(new_stack, "model.joblib")
-    with open("scores.json", "w") as f:
+    joblib.dump(new_stack, f"{req.model_name}.joblib")
+    with open(f"{req.model_name}_scores.json", "w") as f:
         score_data = {
             "accuracy_mean": cross["test_accuracy"].mean(),
             "precision_mean": cross["test_precision"].mean(),
